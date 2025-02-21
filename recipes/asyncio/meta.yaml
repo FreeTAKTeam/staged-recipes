@@ -1,0 +1,44 @@
+{% set name = "asyncio" %}
+{% set version = "3.4.3" %}
+{% set python_min = "3.7" %}
+{% set python_max = "4.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/asyncio-{{ version }}.tar.gz
+  sha256: 83360ff8bc97980e4ff25c964c7bd3923d333d177aa4f7fb736b019f26c7cb41
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+
+test:
+  imports:
+    - asyncio
+  commands:
+    - pip check
+  requires:
+    - python {{ python_min }}
+    - pip
+
+about:
+  home: http://www.python.org/dev/peps/pep-3156/
+  summary: reference implementation of PEP 3156
+  license: Apache-2.0
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - phreed
