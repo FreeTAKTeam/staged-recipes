@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
 set
-
 set -o xtrace -o nounset -o pipefail -o errexit
 
-find .
-
+# Create package archive and install globally
 npm pack --ignore-scripts
-find .
 npm install -ddd \
     --global \
     --build-from-source \
