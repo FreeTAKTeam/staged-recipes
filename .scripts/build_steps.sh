@@ -5,13 +5,10 @@
 # changes to this script, consider a proposal to conda-smithy so that other feedstocks can also
 # benefit from the improvement.
 
-set -xeuo pipefail
+set -euo pipefail
 
 export FEEDSTOCK_ROOT="${FEEDSTOCK_ROOT:-/home/conda/staged-recipes}"
 source "${FEEDSTOCK_ROOT}/.scripts/logging_utils.sh"
-
-# This closes the matching `startgroup` on `run_docker_build.sh`
-( endgroup "Start Docker" ) 2> /dev/null
 
 ( startgroup "Configuring conda" ) 2> /dev/null
 

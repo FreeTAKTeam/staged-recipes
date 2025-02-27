@@ -1,0 +1,76 @@
+Examine container
+AZURE=False
+BASH=/bin/bash
+BASHOPTS=checkwinsize:cmdhist:complete_fullquote:extquote:force_fignore:globasciiranges:hostcomplete:interactive_comments:progcomp:promptvars:sourcepath
+BASH_ALIASES=()
+BASH_ARGC=([0]="0")
+BASH_ARGV=()
+BASH_CMDS=()
+BASH_LINENO=([0]="0")
+BASH_SOURCE=([0]="/home/conda/staged-recipes/.scripts/examine_container.sh")
+BASH_VERSINFO=([0]="5" [1]="1" [2]="8" [3]="1" [4]="release" [5]="x86_64-redhat-linux-gnu")
+BASH_VERSION='5.1.8(1)-release'
+CONFIG=linux64
+DIRSTACK=()
+DISTRO_ARCH=amd64
+DISTRO_NAME=almalinux
+DISTRO_VER=9
+EUID=0
+FEEDSTOCK_ROOT=/home/conda/staged-recipes
+GROUPS=()
+HOME=/root
+HOSTNAME=45469dd6ef2f
+HOSTTYPE=x86_64
+HOST_USER_ID=1000
+IFS=$' \t\n'
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
+MACHTYPE=x86_64-redhat-linux-gnu
+OPTERR=1
+OPTIND=1
+OSTYPE=linux-gnu
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PIPESTATUS=([0]="0")
+PPID=0
+PROVIDER_DIR=.scripts
+PS4='+ '
+PWD=/
+SHELL=/bin/bash
+SHELLOPTS=braceexpand:hashall:interactive-comments
+SHLVL=1
+TERM=xterm
+UID=0
+_=/home/conda/staged-recipes/.scripts/logging_utils.sh
+endgroup () 
+{ 
+    case ${CI:-} in 
+        azure)
+            echo "##[endgroup]"
+        ;;
+        travis)
+            echo -en 'travis_fold:end:'"${1// /}"'\\r'
+        ;;
+        github_actions)
+            echo "::endgroup::"
+        ;;
+    esac
+} 2> /dev/null
+startgroup () 
+{ 
+    case ${CI:-} in 
+        azure)
+            echo "##[group]$1"
+        ;;
+        travis)
+            echo "$1";
+            echo -en 'travis_fold:start:'"${1// /}"'\\r'
+        ;;
+        github_actions)
+            echo "::group::$1"
+        ;;
+        *)
+            echo "$1"
+        ;;
+    esac
+} 2> /dev/null
+Linux 45469dd6ef2f 6.12.9-200.fc41.x86_64 #1 SMP PREEMPT_DYNAMIC Thu Jan  9 16:05:40 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux

@@ -6,7 +6,8 @@ source .scripts/logging_utils.sh
 
 ( startgroup "Configure Docker" ) 2> /dev/null
 
-set -xeo pipefail
+# set -eo pipefail
+SET_OPTIONS=$(set +o)
 
 REPO_ROOT=$(cd "$(dirname "$0")/.."; pwd;)
 ARTIFACTS="$REPO_ROOT/build_artifacts"
@@ -44,7 +45,7 @@ mkdir -p "$ARTIFACTS"
 DONE_CANARY="$ARTIFACTS/conda-forge-build-done"
 rm -f "$DONE_CANARY"
 
-DOCKER_RUN_ARGS="-it ${CONDA_FORGE_DOCKER_RUN_ARGS}"
+DOCKER_RUN_ARGS="${CONDA_FORGE_DOCKER_RUN_ARGS}"
 
 if [ "${AZURE}" == "True" ]; then
     DOCKER_RUN_ARGS=""
@@ -52,20 +53,41 @@ fi
 ( endgroup "Configure Docker" ) 2> /dev/null
 
 ( startgroup "Start Docker" ) 2> /dev/null
-# this group is closed in build_steps.sh
 
 docker pull "${DOCKER_IMAGE}"
-docker run ${DOCKER_RUN_ARGS} \
+CONTAINER_ID=$(docker run -d ${DOCKER_RUN_ARGS} \
            -v "${REPO_ROOT}:/home/conda/staged-recipes" \
            -e HOST_USER_ID=${HOST_USER_ID} \
            -e AZURE=${AZURE} \
+           -e PROVIDER_DIR=${PROVIDER_DIR} \
            -e CONFIG \
            -e CI \
            -e CPU_COUNT \
            -e DEFAULT_LINUX_VERSION \
-           "${DOCKER_IMAGE}" \
-           bash \
-           "/home/conda/staged-recipes/${PROVIDER_DIR}/build_steps.sh"
+           "${DOCKER_IMAGE}")
+CONTAINER_NAME=$(docker inspect --format '{{.Name}}' $CONTAINER_ID | sed 's/^\/\+//')
+echo "Container: Name = ${CONTAINER_NAME}, ID = ${CONTAINER_ID}"
+
+( endgroup "Start Docker" ) 2> /dev/null
+# docker inspect $CONTAINER_ID
+
+set +e +o pipefail
+docker exec -it ${CONTAINER_ID} /bin/bash \
+        "/home/conda/staged-recipes/${PROVIDER_DIR}/examine_container.sh" \
+        | tee output.log
+        # "/home/conda/staged-recipes/${PROVIDER_DIR}/build_steps.sh" \
+BUILD_STEPS_STATUS=${PIPESTATUS[0]}
+if [ $BUILD_STEPS_STATUS -eq 0 ]; then
+  ( startgroup "Stop Docker" ) 2> /dev/null
+  docker stop ${CONTAINER_ID}
+  docker rm ${CONTAINER_ID}
+  ( endgroup "Stop Docker" ) 2> /dev/null
+else
+  echo "Shell Build Steps Status: $BUILD_STEPS_STATUS"
+  docker exec -it ${CONTAINER_ID} bash 
+#   exit $BUILD_STEPS_STATUS
+fi
+eval "$SET_OPTIONS"
 
 # verify that the end of the script was reached
 test -f "$DONE_CANARY"
