@@ -28,11 +28,12 @@ requirements:
     - nodejs
     - pnpm
     - pnpm-licenses
+  run:
+    - nodejs
 
 tests:
-  - script: 
-      - "echo node-red --help 2>&1"
-      - ls
+  - script:
+      - node-red --help
 
 about:
   homepage: https://nodered.org
