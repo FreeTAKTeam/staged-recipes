@@ -16,18 +16,18 @@ package:
 source:
   - url: https://registry.npmjs.org/${{ name }}/-/${{ name }}-${{ version }}.tgz
     sha256: ${{ sha }} 
-    # file_name: ${{ name }}-${{ version }}.tgz
+    file_name: ${{ name }}-${{ version }}.tgz
   - path: node-red.cmd
     target_directory: bin
  
 build:
   number: 0
   script: |
-    npm pack --ignore-scripts
-    npm install -ddd --global --build-from-source $SRC_DIR/${{ name }}-${{ version }}.tgz --prefix $PREFIX
-    cp bin/node-red.cmd $PREFIX/bin/node-red.cmd
-    pnpm install --lockfile-only
-    pnpm-licenses generate-disclaimer --prod --output-file=third-party-licenses.txt
+    tar xvzf ${{ name }}-${{ version }}.tgz --strip-components=1 --directory $PREFIX
+    cd $PREFIX
+    pnpm install
+    pnpm add semver
+    pnpm-licenses generate-disclaimer --prod --output-file=$SRC_DIR/third-party-licenses.txt
 
 requirements:
   build:
@@ -36,10 +36,12 @@ requirements:
     - pnpm-licenses
   run:
     - nodejs
+    - pnpm
 
 tests:
   - script:
-      - node-red --help
+      # - find . -maxdepth 3
+      - pnpm start --help
       - test -f bin/node-red.cmd
 
 about:
