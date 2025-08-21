@@ -24,6 +24,7 @@ source:
       target_directory: bin/node-red.cmd
 
 build:
+  number: 0
   script:
     interpreter: nu
     content: |
@@ -34,7 +35,7 @@ build:
       tar -xzf node-red.tgz
       cd ..
 
-      npm install -g ./node-red-src/node-red-${{ version }}.tgz --prefix ${{ PREFIX }}
+      npm install -g ./node-red-src/node-red.tgz --prefix ${{ PREFIX }}
 
       # Create node-red binary wrapper
       let bin_dir = $"($env.PREFIX)/bin"
