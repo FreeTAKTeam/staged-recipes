@@ -22,48 +22,45 @@ build:
   script:
     interpreter: nu
     content: |
-      $"building ($env.PKG_NAME)!"
+      print $"building ($env.PKG_NAME)!"
 
       # Extract the tarball first
       cd node-red-src
-      tar -xzf node-red.tgz
+      ^tar -xzf node-red.tgz
       cd ..
 
-      npm install -g ./node-red-src/node-red.tgz --prefix ${{ PREFIX }}
+      ^npm install -g ./node-red-src/node-red.tgz --prefix $env.PREFIX
 
       ## Create node-red wrapper script
 
       # Define the installation paths using Nushell variables
       let bin_dir = $"($env.PREFIX)/bin"
-      let node_red_lib = $"($env.PREFIX)/lib/node_modules/node-red/packages/node_modules/node-red/red.js"
+      let node_red_lib = $"($env.PREFIX)/lib/node_modules/node-red/packages/node-modules/node-red/red.js"
 
       # Create the bin directory if it doesn't exist
       mkdir $bin_dir
 
       # Generate the script content based on the OS
-      when ($nu.os-info.family) {
+      match ($nu.os-info.family) {
           "unix" => {
               # Create a literal string for the bash script.
               # This will be written to the file without Nushell trying to interpolate it.
-              # Note: You can't interpolate inside single quotes
-              let path = $"($node_red_lib)"
               let node_red_bin = $"($bin_dir)/node-red"
               $"#!/bin/sh
-              exec node \"($path)\" \"$@\"
+              exec node \"($node_red_lib)\" \"$@\"
               " | save $node_red_bin
-              chmod +x $node_red_bin
+              ^chmod +x $node_red_bin
           }
           "windows" => {
               # This creates a valid Windows batch file
-              let path = $"($node_red_lib)"
               $"@echo off
-              \"%CONDA_PREFIX%\Scripts\node\" \"($path)\" %*
+              \"%CONDA_PREFIX%\\Scripts\\node\" \"($node_red_lib)\" %*
               " | save $"($bin_dir)/node-red.cmd"
           }
-          _ => error "Unsupported OS family"
+          _ => { error make { msg: "Unsupported OS family" } }
       }
 
-      # Install service configuration file on Linux
+      # Install service configuration file
       print "Installing service configuration file..."
 
       let config_dir = $"($env.PREFIX)/config"
@@ -78,12 +75,15 @@ build:
       }
 
       # Create a simple license summary since npm_licenses.nu script is not available in build environment
-      echo "Node-RED npm dependencies license information generated during build" | save license_summary.txt
+      "Node-RED npm dependencies license information generated during build" | save license_summary.txt
       if (which npm | is-not-empty) {
         try {
-          npm list --depth=0 --json | from json | get dependencies | columns | each { |pkg| $"($pkg): Check npm registry for license" } | str join "\n" | save --append license_summary.txt
+          let deps = (^npm list --depth=0 --json | from json | get dependencies)
+          if ($deps | is-not-empty) {
+            $deps | columns | each { |pkg| $"($pkg): Check npm registry for license" } | str join "\n" | save --append license_summary.txt
+          }
         } catch {
-          echo "Could not generate detailed npm license list" | save --append license_summary.txt
+          "Could not generate detailed npm license list" | save --append license_summary.txt
         }
       }
 
