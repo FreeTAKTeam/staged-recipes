@@ -127,7 +127,7 @@ tests:
       content:
         - ${{ "dir /b | head -10" if win else "ls . | first 10" }}
         - echo "Testing node-red installation..."
-        - ${{ "where node-red" if win else "which node-red" }}
+        - ${{ "^where.exe node-red" if win else "which node-red" }}
 
 about:
   homepage: https://nodered.org
