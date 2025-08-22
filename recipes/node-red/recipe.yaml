@@ -40,8 +40,12 @@ build:
       ## Create node-red wrapper script
 
       # Define the installation paths using Nushell variables
+      # npm global install structure differs between Unix and Windows
       let bin_dir = $"($library_prefix)/bin"
-      let node_red_lib = $"($library_prefix)/lib/node_modules/node-red/packages/node-modules/node-red/red.js"
+      let node_red_lib = match ($nu.os-info.family) {
+          "windows" => $"($library_prefix)/node_modules/node-red/red.js"
+          _ => $"($library_prefix)/lib/node_modules/node-red/red.js"
+      }
 
       # Create the bin directory if it doesn't exist
       mkdir $bin_dir
@@ -108,7 +112,7 @@ tests:
   - package_contents:
       files:
         # Node-RED Node.js package
-        - ${{ "Library/" if win }}lib/node_modules/node-red/package.json
+        - ${{ "Library/node_modules/" if win else "lib/node_modules/" }}node-red/package.json
           # Binary/executable
         - ${{ "Library/" if win }}bin/node-red${{ ".cmd" if win }}
           # Service configuration file
