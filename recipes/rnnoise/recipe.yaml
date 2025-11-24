@@ -20,25 +20,27 @@ source:
   # The project has a download_model.sh script that historically does this.
   - url: https://media.xiph.org/rnnoise/models/rnnoise_data-${{ model_version }}.tar.gz
     sha256: 4ac81c5c0884ec4bd5907026aaae16209b7b76cd9d7f71af582094a2f98f4b43
+  - path: src/
+    target_directory: .
 
 build:
   number: 0
+  script:
+    - if: win
+      then: |
+        cmake -GNinja %CMAKE_ARGS% %SRC_DIR%
+      else: |
+        cmake -GNinja $CMAKE_ARGS $SRC_DIR
+    - cmake --build . --config Release
+    - cmake --install . --config Release
 
 requirements:
   build:
     - ${{ compiler('c') }}
     - ${{ stdlib('c') }}
+    - cmake
+    - ninja
     - pkg-config
-    - if: unix
-      then:
-        - gnuconfig
-        - make
-        - autoconf
-        - automake
-        - libtool
-    - if: win
-      then:
-        - autotools_clang_conda
 
 tests:
   - package_contents:
