@@ -60,12 +60,12 @@ tests:
           - if: win
             then:
               - Library/lib/pkgconfig/speexdsp.pc
-              - Library/lib/cmake/speexdsp/speexdspConfig.cmake
-              - Library/lib/cmake/speexdsp/speexdspConfigVersion.cmake
+              - Library/lib/cmake/speexdsp/speexdsp-config.cmake
+              - Library/lib/cmake/speexdsp/speexdsp-config-version.cmake
             else:
               - lib/pkgconfig/speexdsp.pc
-              - lib/cmake/speexdsp/speexdspConfig.cmake
-              - lib/cmake/speexdsp/speexdspConfigVersion.cmake
+              - lib/cmake/speexdsp/speexdsp-config.cmake
+              - lib/cmake/speexdsp/speexdsp-config-version.cmake
 
 about:
   homepage: https://speex.org/

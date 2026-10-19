@@ -149,25 +149,26 @@ install(FILES "${CMAKE_BINARY_DIR}/speexdsp.pc"
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/speexdspConfig.cmake.in"
-    "${CMAKE_BINARY_DIR}/speexdspConfig.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/speexdsp_config.cmake.in"
+    "${CMAKE_BINARY_DIR}/speexdsp-config.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/speexdsp
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
 )
 
 write_basic_package_version_file(
-    "${CMAKE_BINARY_DIR}/speexdspConfigVersion.cmake"
+    "${CMAKE_BINARY_DIR}/speexdsp-config-version.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
 install(EXPORT speexdspTargets
-    FILE speexdspTargets.cmake
+    FILE speex_dsp_targets.cmake
     NAMESPACE speexdsp::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/speexdsp
 )
 
 install(FILES
-    "${CMAKE_BINARY_DIR}/speexdspConfig.cmake"
-    "${CMAKE_BINARY_DIR}/speexdspConfigVersion.cmake"
+    "${CMAKE_BINARY_DIR}/speexdsp-config.cmake"
+    "${CMAKE_BINARY_DIR}/speexdsp-config-version.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/speexdsp
 )
